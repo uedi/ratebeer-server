@@ -1,11 +1,15 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
 const countrySchema = mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     }
 })
+
+countrySchema.plugin(uniqueValidator)
 
 countrySchema.set('toJSON', {
     transform: (document, returnedObject) => {
