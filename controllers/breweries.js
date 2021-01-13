@@ -1,5 +1,6 @@
 const breweriesRouter = require('express').Router()
 const Brewery = require('../models/brewery')
+const Country = require('../models/country')
 
 breweriesRouter.get('/', async (request, response) => {
     const breweries = await Brewery.find()
@@ -14,7 +15,7 @@ breweriesRouter.post('/', async (request, response) => {
     }
 
     const brewery = new Brewery({
-        name: body.name,
+        name: body.name
     })
 
     if(body.year && !Number.isInteger(body.year)) {
@@ -24,6 +25,16 @@ breweriesRouter.post('/', async (request, response) => {
     }
 
     if(body.country) {
+        const country = await Country.findById(body.country)
+        if(!country) {
+            return response.status(400).json({ error: 'Country does not exist.' })
+        }
+        
+        const existingBrewery = await Brewery.findOne({ name: body.name, country: body.country })
+
+        if(existingBrewery) {
+            return response.status(400).json({ error: 'Same named brewery already exist in the country.' })
+        }
         brewery.country = body.country
     }
     
