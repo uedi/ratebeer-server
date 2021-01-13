@@ -58,7 +58,17 @@ describe('POST /api/breweries', () => {
         expect(response.body.country).toBe(undefined)
         expect(response.body._id).toBe(undefined)
         expect(response.body.__v).toBe(undefined)
-        
+    })
+    test('year must be integer', async () => {
+        const valid = { name: 'valid1', year: 2000 }
+        const invalid1 = { name: 'invalid1', year: "2000" }
+        const invalid2 = { name: 'invalid2', year: true }
+        const invalid3 = { name: 'invalid3', year: 2000.1 }
+
+        await api.post(baseUrl).send(valid).expect(201)
+        await api.post(baseUrl).send(invalid1).expect(400)
+        await api.post(baseUrl).send(invalid2).expect(400)
+        await api.post(baseUrl).send(invalid3).expect(400)
     })
 })
 

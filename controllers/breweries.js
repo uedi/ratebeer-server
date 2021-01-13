@@ -17,7 +17,9 @@ breweriesRouter.post('/', async (request, response) => {
         name: body.name,
     })
 
-    if(body.year) {
+    if(body.year && !Number.isInteger(body.year)) {
+        return response.status(400).json({ error: 'Year must be integer.' })
+    } else if(body.year) {
         brewery.year = body.year
     }
 
