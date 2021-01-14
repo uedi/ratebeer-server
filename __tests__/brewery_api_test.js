@@ -30,7 +30,7 @@ describe('POST /api/breweries', () => {
 
         const createCountryResponse = await api.post('/api/countries')
         .send({ name: 'Country '})
-        expect(201)
+        .expect(201)
 
         const brewery2withcountry = {...brewery2, country: createCountryResponse.body.id }
         

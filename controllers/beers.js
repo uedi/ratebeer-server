@@ -20,14 +20,19 @@ beersRouter.post('/', async (request, response) => {
     })
 
     if(body.brewery) {
-        const brewery = await Brewery.findById(body.bwerery)
+        const brewery = await Brewery.findById(body.brewery)
 
         if(!brewery) {
             return response.status(400).json({ error: 'Brewery does not exist.' })
         }
 
-        beer.brewery = body.brewery
+        const beerWithSameName = await Beer.findOne({ name: body.name, brewery: body.brewery })
 
+        if(beerWithSameName) {
+            return response.status(400).json({ error: 'Brewery already has beer with that name.'})
+        }
+
+        beer.brewery = body.brewery
     }
 
     if(body.style) {
