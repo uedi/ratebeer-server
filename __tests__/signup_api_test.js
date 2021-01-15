@@ -5,6 +5,8 @@ const api = supertest(app)
 const User = require('../models/user')
 const signupUrl = '/api/signup'
 
+const validUser = { username: 'dude', password: 'password123'}
+
 beforeEach(async () => {
     await User.deleteMany({})
 })
@@ -28,23 +30,31 @@ describe('signup', () => {
     test('is possible with proper data', async () => {
         await api
             .post(signupUrl)
-            .send({ username: 'dude', password: 'password123' })
+            .send(validUser)
             .expect(201)
     })
     test('is not possible if username already in use', async () => {
-        const userToCreate = { username: 'dude', password: 'password123'}
-
         await api
             .post(signupUrl)
-            .send(userToCreate)
+            .send(validUser)
             .expect(201)
 
         const withSameData = await api
             .post(signupUrl)
-            .send(userToCreate)
+            .send(validUser)
             .expect(400)
         expect(withSameData.body.error).toBeDefined()
         expect(withSameData.body.error).toBe('Username already in use.')
+    })
+    test('returns token and username', async () => {
+        const response = await api
+        .post(signupUrl)
+        .send(validUser)
+        .expect(201)
+        expect(response.body.token).toBeDefined()
+        expect(response.body.token.length > 0).toBe(true)
+        expect(response.body.username).toBeDefined()
+        expect(response.body.username).toBe(validUser.username)
     })
 })
 
